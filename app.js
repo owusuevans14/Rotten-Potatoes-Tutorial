@@ -1,13 +1,39 @@
 const express = require('express')
 const app = express()
-
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/rotten-potatoes', { useNewUrlParser: true });
 
 const Review = mongoose.model('Review', {
   title: String,
+  description: String,
   movieTitle: String
 });
+
+// INITIALIZE BODY-PARSER AND ADD IT TO APP
+const bodyParser = require('body-parser');
+
+
+// The following line must appear AFTER const app = express() and before your routes!
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+// CREATE
+app.post('/reviews', (req, res) => {
+  console.log(req.body);
+  // res.render('reviews-new', {});
+})
+
+//CREATE
+app.post('/reviews', (req, res) => {
+  Review.create(req.body).then((review) => {
+    console.log(review);
+    res.redirect('/');
+  }).catch((err) => {
+    console.log(err.message);
+  })
+})
+
+
 
 
 var exphbs = require('express-handlebars');
@@ -36,7 +62,10 @@ app.get('/', (req, res) => {
     })
 })
 
-
+// NEW
+app.get('/reviews/new', (req, res) => {
+  res.render('reviews-new', {});
+})
 
 
 app.listen(3000, () => {
